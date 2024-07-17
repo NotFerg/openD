@@ -14,5 +14,44 @@
   "type": "module",
   "workspaces": [
     "src/openD_frontend"
-  ]
+  ],
+  "dependencies": {
+    "@dfinity/agent": "^1.2.0",
+    "@dfinity/auth-client": "^1.4.0",
+    "@dfinity/candid": "1.4.0",
+    "@dfinity/principal": "^1.2.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.15",
+    "assert": "2.0.0",
+    "buffer": "6.0.3",
+    "bootstrap": "^5.3.3",
+    "copy-webpack-plugin": "^10.2.4",
+    "css-loader": "^6.5.1",
+    "events": "3.3.0",
+    "html-webpack-plugin": "5.5.0",
+    "lit-html": "^3.1.4",
+    "process": "0.11.10",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.10.4",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.52.1",
+    "react-router-dom": "^6.24.1",
+    "stream-browserify": "3.0.0",
+    "style-loader": "^3.3.1",
+    "terser-webpack-plugin": "5.3.1",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.5",
+    "util": "0.12.4",
+    "webpack": "5.69.1",
+    "webpack-cli": "4.9.2",
+    "webpack-dev-server": "^4.4.0"
+  },
+  "browserslist": [
+      "last 2 chrome version",
+      "last 2 firefox version",
+      "last 2 safari version",
+      "last 2 edge version"
+    ]
 }
