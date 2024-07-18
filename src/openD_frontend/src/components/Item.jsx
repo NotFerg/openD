@@ -3,21 +3,28 @@ import logo from "/logo.png";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory } from "../../../declarations/nft";
 import { Principal } from "@dfinity/principal";
+import Button from "./Button";
+import { openD_backend } from "../../../declarations/openD_backend";
 
 function Item(props) {
 
-  const [name,setName] = useState("");
-  const [owner,setOwner] = useState("");
+  const [name,setName] = useState();
+  const [owner,setOwner] = useState();
   const [image,setImage] = useState();
+  const [button,setButton] = useState();
+  const [priceInput,setPriceInput] = useState();
 
 
   const id = props.id;
 
   const localhost = "http://localhost:3000";
   const agent = new HttpAgent({ host: localhost });
+  // WHEN DEPLOY LIVE REMOVE LINE BELO
+  agent.fetchRootKey();
+  let NFTActor;
 
   async function loadNFT() {
-    const NFTActor = await Actor.createActor(idlFactory, {
+     NFTActor = await Actor.createActor(idlFactory, {
       agent,
       canisterId: id,
     });
@@ -32,11 +39,38 @@ function Item(props) {
     setName(name);
     setOwner(owner.toText());
     setImage(image);
+    setButton(<Button handleClick={handleSell} text={"Sell"}/>)
   }
 
   useEffect(() => {
     loadNFT();
   }, []);
+
+  let price;
+  function handleSell(){
+    // console.log("Sell Clicked");
+    setPriceInput(
+      <input
+        placeholder="Price in FERG"
+        type="number"
+        className="price-input"
+        value={price}
+        onChange={(e) => price = e.target.value}
+      />
+    );
+    setButton(<Button handleClick={sellItem} text={"Confirm"}/>)
+  }
+
+  async function sellItem() {
+    // console.log("Confirmed Click");
+    const listingResult = await openD_backend.listItem(props.id,Number(price));
+    console.log("Listing: ",listingResult);
+    if(listingResult == "Success"){
+      const openDID = await openD_backend.getOpenDCanisterID();
+      const transferResult = await NFTActor.transferOwnership(openDID)  
+      console.log("transfer: ",transferResult);
+    }
+  }
 
   return (
     <div className="disGrid-item">
@@ -52,6 +86,8 @@ function Item(props) {
           <p className="disTypography-root makeStyles-bodyText-24 disTypography-body2 disTypography-colorTextSecondary">
             Owner: {owner}
           </p>
+          {priceInput}
+          {button}
         </div>
       </div>
     </div>
