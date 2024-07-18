@@ -25,8 +25,8 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "assert": "2.0.0",
-    "buffer": "6.0.3",
     "bootstrap": "^5.3.3",
+    "buffer": "6.0.3",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.5.1",
     "events": "3.3.0",
@@ -37,7 +37,7 @@
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.52.1",
-    "react-router-dom": "^6.24.1",
+    "react-router-dom": "^5.2.0",
     "stream-browserify": "3.0.0",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "5.3.1",
@@ -49,9 +49,9 @@
     "webpack-dev-server": "^4.4.0"
   },
   "browserslist": [
-      "last 2 chrome version",
-      "last 2 firefox version",
-      "last 2 safari version",
-      "last 2 edge version"
-    ]
+    "last 2 chrome version",
+    "last 2 firefox version",
+    "last 2 safari version",
+    "last 2 edge version"
+  ]
 }

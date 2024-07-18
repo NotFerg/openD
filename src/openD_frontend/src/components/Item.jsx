@@ -11,7 +11,7 @@ function Item(props) {
   const [image,setImage] = useState();
 
 
-  const id = Principal.fromText(props.id);
+  const id = props.id;
 
   const localhost = "http://localhost:3000";
   const agent = new HttpAgent({ host: localhost });
