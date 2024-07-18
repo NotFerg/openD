@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import logo from "/logo.png";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory } from "../../../declarations/nft";
@@ -7,13 +7,14 @@ import Button from "./Button";
 import { openD_backend } from "../../../declarations/openD_backend";
 
 function Item(props) {
-
-  const [name,setName] = useState();
-  const [owner,setOwner] = useState();
-  const [image,setImage] = useState();
-  const [button,setButton] = useState();
-  const [priceInput,setPriceInput] = useState();
-
+  const [name, setName] = useState();
+  const [owner, setOwner] = useState();
+  const [image, setImage] = useState();
+  const [button, setButton] = useState();
+  const [priceInput, setPriceInput] = useState();
+  const [loaderHidden, setLoaderHidden] = useState(true);
+  const [blur,setBlur] = useState();
+  const [sellStatus, setSellStatus] = useState("");
 
   const id = props.id;
 
@@ -24,7 +25,7 @@ function Item(props) {
   let NFTActor;
 
   async function loadNFT() {
-     NFTActor = await Actor.createActor(idlFactory, {
+    NFTActor = await Actor.createActor(idlFactory, {
       agent,
       canisterId: id,
     });
@@ -33,13 +34,24 @@ function Item(props) {
     const owner = await NFTActor.getOwner();
     const imageData = await NFTActor.getAsset();
     const imageContent = new Uint8Array(imageData);
-    const image = URL.createObjectURL(new Blob([imageContent.buffer],{type: "image/png"}));
-    console.log(image)
+    const image = URL.createObjectURL(
+      new Blob([imageContent.buffer], { type: "image/png" })
+    );
+    console.log(image);
 
     setName(name);
     setOwner(owner.toText());
     setImage(image);
-    setButton(<Button handleClick={handleSell} text={"Sell"}/>)
+
+    const nftIsListed = await openD_backend.isListed(props.id);
+
+    if(nftIsListed){
+      setOwner("OpenD");
+      setBlur({filter: "blur(5px)"});
+      setSellStatus("Listed");
+    } else{
+      setButton(<Button handleClick={handleSell} text={"Sell"} />);
+    }
   }
 
   useEffect(() => {
@@ -47,7 +59,8 @@ function Item(props) {
   }, []);
 
   let price;
-  function handleSell(){
+  function handleSell() {
+    setLoaderHidden(false);
     // console.log("Sell Clicked");
     setPriceInput(
       <input
@@ -55,20 +68,29 @@ function Item(props) {
         type="number"
         className="price-input"
         value={price}
-        onChange={(e) => price = e.target.value}
+        onChange={(e) => (price = e.target.value)}
       />
     );
-    setButton(<Button handleClick={sellItem} text={"Confirm"}/>)
+    setButton(<Button handleClick={sellItem} text={"Confirm"} />);
   }
 
   async function sellItem() {
+    setBlur({filter: "blur(5px)"});
+    setLoaderHidden(false);
     // console.log("Confirmed Click");
-    const listingResult = await openD_backend.listItem(props.id,Number(price));
-    console.log("Listing: ",listingResult);
-    if(listingResult == "Success"){
+    const listingResult = await openD_backend.listItem(props.id, Number(price));
+    console.log("Listing: ", listingResult);
+    if (listingResult == "Success") {
       const openDID = await openD_backend.getOpenDCanisterID();
-      const transferResult = await NFTActor.transferOwnership(openDID)  
-      console.log("transfer: ",transferResult);
+      const transferResult = await NFTActor.transferOwnership(openDID);
+      console.log("transfer: ", transferResult);
+      if (transferResult == "Success") {
+        setLoaderHidden(true);
+        setButton();
+        setPriceInput();
+        setOwner("OpenD");
+        setSellStatus("Listed");
+      }
     }
   }
 
@@ -78,10 +100,18 @@ function Item(props) {
         <img
           className="disCardMedia-root makeStyles-image-19 disCardMedia-media disCardMedia-img"
           src={image}
+          style={blur}
         />
+        <div className="lds-ellipsis" hidden = {loaderHidden}>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
         <div className="disCardContent-root">
           <h2 className="disTypography-root makeStyles-bodyText-24 disTypography-h5 disTypography-gutterBottom">
-            {name}<span className="purple-text"></span>
+            {name}
+            <span className="purple-text"> {sellStatus}</span>
           </h2>
           <p className="disTypography-root makeStyles-bodyText-24 disTypography-body2 disTypography-colorTextSecondary">
             Owner: {owner}
