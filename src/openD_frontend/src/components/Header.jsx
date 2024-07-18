@@ -6,15 +6,20 @@ import Minter from "./Minter";
 import Gallery from "./Gallery";
 import { openD_backend } from "../../../declarations/openD_backend";
 import CURRENT_USER_ID from "../index"
-import { title } from "process";
+
 
 function Header() {
 
   const [userOwnedGallery, setUserOwnedGallery] = useState();
+  const [listingGallery, setListingGallery] = useState();
 
   async function getNFTS(){
     const userNFTIds = await openD_backend.getOwnedNFTs(CURRENT_USER_ID);
-    setUserOwnedGallery(<Gallery title = "My NFTS" ids={userNFTIds}/>);
+    setUserOwnedGallery(<Gallery title = "My NFTS" ids={userNFTIds} role="collection"/>);
+
+    const listedNFTIds = await openD_backend.getListedNFTs();
+    console.log(listedNFTIds);
+    setListingGallery(<Gallery title="Discover" ids={listedNFTIds} role="discover"/>)
   }
 
   useEffect(() => {getNFTS()},[])
@@ -50,7 +55,7 @@ function Header() {
           <img className="bottom-space" src={homeImage} />
         </Route>
         <Route path="/discover">
-          <h1>Discover</h1>
+          {listingGallery}
         </Route>
         <Route path="/minter">
           <Minter />
